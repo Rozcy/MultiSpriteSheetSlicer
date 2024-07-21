@@ -241,6 +241,11 @@ public class SliceSpriteSheets : EditorWindow
                 {
                     for (int j = 0; j < spritesPerRow; j++)
                     {
+                        if (IsCellEmpty(spriteSheet, j * spritePixelsPerUnitX, i * spritePixelsPerUnitY, spritePixelsPerUnitX, spritePixelsPerUnitY))
+                        {
+                            continue;
+                        }
+
                         SpriteMetaData smd = new SpriteMetaData();
                         smd.rect = new Rect(j * spritePixelsPerUnitX, i * spritePixelsPerUnitY, spritePixelsPerUnitX, spritePixelsPerUnitY);
                         smd.name = string.Format("{0}_{1}", Path.GetFileNameWithoutExtension(assetPath), (i * spritesPerRow) + j);
@@ -276,6 +281,19 @@ public class SliceSpriteSheets : EditorWindow
 
         AssetDatabase.Refresh();
         RefreshSelectedSpriteSheets();
+    }
+
+    private bool IsCellEmpty(Texture2D texture, int x, int y, int width, int height)
+    {
+        Color[] pixels = texture.GetPixels(x, y, width, height);
+        foreach (Color pixel in pixels)
+        {
+            if (pixel.a > 0)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private SpriteAlignment GetPivotAlignment(int presetIndex)
